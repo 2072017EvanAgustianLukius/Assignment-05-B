@@ -130,11 +130,13 @@ echo '<tbody>';
 
 foreach ($result3 as $book) {
     echo '<tr>';
-    echo '<td>'; if($book['cover'] = null OR $book['cover'] = ""){
+    echo '<td>';
+    if($book['cover'] == null || $book['cover'] == ""){
         echo '<img src="upload/default_book.jpg" width="100">';
     }else{
         echo '<img src="upload/' . $book['cover'] . '" width="100">';
-    } echo '</td>';
+    }
+    echo '</td>';
     echo '<td>' . $book['isbn'] . '</td>';
     echo '<td>' . $book['title'] . '</td>';
     echo '<td>' . $book['author'] . '</td>';
@@ -143,18 +145,17 @@ foreach ($result3 as $book) {
     echo '<td>' . $book['short_description'] . '</td>';
     echo '<td>' . $book['name'] . '</td>';
     echo '<td>
-            <button onclick="UploadCover(' . $book['isbn'] . ')"
-            class="btn btn-primary">Change Cover</button>
-            <button onclick="editBook(' . $book['isbn'] . ')"
-            class="btn btn-warning">Edit Data</button>
-            <button onclick="deleteBook('. $book['isbn'] . ')"
-            class="btn btn-danger">Delete Data</button>';
-    '</td>';
+            <button onclick="UploadCover(' . $book['isbn'] . ')" class="btn btn-primary">Change Cover</button>
+            <button onclick="editBook(' . $book['isbn'] . ')" class="btn btn-warning">Edit Data</button>
+            <button onclick="deleteBook('. $book['isbn'] . ')" class="btn btn-danger">Delete Data</button>
+         </td>';
     echo '</tr>';
 }
 
 echo '</tbody>';
 echo '</table>';
+
+
 
 ?>
 
