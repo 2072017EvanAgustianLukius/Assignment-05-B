@@ -20,10 +20,22 @@ if (isset($saveButtonPressed)){
     $publisher_year = filter_input(INPUT_POST, "txtPublisherYear");
     $short_description = filter_input(INPUT_POST, "txtDescription");
     $genre = filter_input(INPUT_POST, "txtGenre");
+    if(isset($_FILES['cover']['name'])){
+        $targetDirectory = 'upload/';
+        $fileExtension = pathinfo($_FILES['cover']['name'],PATHINFO_EXTENSION);
+        $newFileName= $isbn . '.' . $fileExtension;
+        $targetFile = $targetDirectory . $newFileName;
+        if($_FILES['cover']['size'] > 5 * 1200 * 1200){
+            echo '<div class="bg-info">Upload error. File size exceed 2 MB</div>';
+        }else{
+            move_uploaded_file($_FILES['cover']['tmp_name'],$targetFile);
+        }
+    }
+    $result = addBookToDB($isbn, $title,$author,$publisher,$publisher_year,$short_description,$genre, $newFileName);
     if (trim($isbn) == ""){
         echo 'Please fill a valid Book name';
     } else {
-        $result = addBookToDB($isbn, $title,$author,$publisher,$publisher_year,$short_description,$genre);
+//        $result = addBookToDB($isbn, $title,$author,$publisher,$publisher_year,$short_description,$genre);
         if($result){
             echo '<div>Data Successfully added </div>';
         }else{
@@ -36,12 +48,12 @@ if (isset($saveButtonPressed)){
 <?php
 $link = createMySQLConnection();
 $result2 = fetchGenreFromDB();
-$result = fetchBookFromDB();
+$result3 = fetchBookFromDB();
 $link = null;
 ?>
 
 
-<form class="form-group container" method="post">
+<form class="form-group container" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="txtISBN">ISBN</label>
         <input class="form-control" type="text" maxlength="13" id="txtISBN" name="txtISBN" required autofocus placeholder="ISBN">
@@ -76,20 +88,28 @@ $link = null;
             ?>
         </select>
     </div>
+    <div class="form-group">
+        <label>Cover File</label>
+        <input type="file" name="cover" class="form-control" accept="image/png, image/jpeg">
+    </div>
     <input class="btn btn-info form-control" type="submit" name="btnSave" value="Save Book">
 </form>
 
 <?php
-function tampilkanGambar($book)
-{
-    if (!empty($book['cover'])) {
-        $gambar = 'upload/' . pathinfo($book['cover'], PATHINFO_FILENAME) . ';base64,' . base64_encode(file_get_contents('upload/' . $book['cover']));
-    } else {
-        $gambar = 'upload/default_book.jpg';
-    }
-
-    return '<img src="' . $gambar . '" width="100">';
-}
+/**
+ * @param $book
+ * @return string
+ */
+//function tampilkanGambar($book) : string
+//{
+//    if ($book['cover'] = null OR $book['cover'] = "") {
+//        $gambar = 'default_book.jpg';
+//    } else {
+//        $gambar = $book['cover'] ;
+//    }
+//    return '<img src="upload/' . $gambar . '" width="100">';
+//
+//}
 
 
 echo '<table id="myTable" class="table table-striped table-bordered" style="width:100%">';
@@ -108,9 +128,13 @@ echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
 
-foreach ($result as $book) {
+foreach ($result3 as $book) {
     echo '<tr>';
-    echo '<td>' . tampilkanGambar($book) . '</td>';
+    echo '<td>'; if($book['cover'] = null OR $book['cover'] = ""){
+        echo '<img src="upload/default_book.jpg" width="100">';
+    }else{
+        echo '<img src="upload/' . $book['cover'] . '" width="100">';
+    } echo '</td>';
     echo '<td>' . $book['isbn'] . '</td>';
     echo '<td>' . $book['title'] . '</td>';
     echo '<td>' . $book['author'] . '</td>';

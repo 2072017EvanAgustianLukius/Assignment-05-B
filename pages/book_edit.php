@@ -10,11 +10,12 @@ if (isset($updatePressed)){
     $publisher = filter_input(INPUT_POST, "txtPublisher");
     $publisher_year = filter_input(INPUT_POST, "txtPublisherYear");
     $short_description = filter_input(INPUT_POST, "txtDescription");
+    $cover = filter_input(INPUT_POST, "cover");
     $genre = filter_input(INPUT_POST, "txtGenre");
     if (trim($title) == ''){
         echo 'Please fill a valid name';
     }else{
-        $result = updateBooktoDB($title,$author,$publisher,$publisher_year,$short_description,$genre);
+        $result = updateBooktoDB($title,$author,$publisher,$publisher_year,$short_description,$cover,$genre);
         if($result){
             header('location:index.php?menu=book');
         }else{
@@ -24,6 +25,7 @@ if (isset($updatePressed)){
 }
 
 $result2 = fetchGenreFromDB();
+$result3 = fetchBookFromDB();
 ?>
 
 <form class="form-group container" method="post">
@@ -50,6 +52,17 @@ $result2 = fetchGenreFromDB();
     <div class="form-group">
         <label for="txtDescription">Description</label>
         <textarea class="form-control" type="text" maxlength="305" id="txtDescription" name="txtDescription" required autofocus placeholder="Description"><?php echo $book['short_description']?></textarea>
+    </div>
+    <div class = form-group>
+
+        <?php
+        foreach ($result3 as $book) {
+        echo '<img src="upload/' . $book['cover'] . '" width="100">';
+        }
+        ?>
+        <br>
+        <label>Current Cover</label>
+        <input type="file" name="cover" class="form-control" accept="image/png, image/jpeg">
     </div>
     <div class="form-group">
         <label for="txtGenre">Genre Name</label>

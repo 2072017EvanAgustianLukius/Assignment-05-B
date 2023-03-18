@@ -29,8 +29,19 @@ if (isset($_POST['bthUpload'])) {
         echo "No file was uploaded.";
     }
 }
+$result3 = fetchBookFromDB();
 ?>
-<form method="post" enctype="multipart/form-data">
-    <input type="file" name="imageFile" accept="image/*" class="form-control">
+
+<form class="form-group container-fluid" method="post" enctype="multipart/form-data">
+    <div class = form-group>
+        <?php
+        foreach ($result3 as $book) {
+            echo '<img src="upload/' . $book['cover'] . '" width="100">';
+        }
+        ?>
+        <br>
+        <label>Current Cover</label>
+    <input type="file" name="imageFile" accept="image/*" class="form-control"><br>
     <input type="submit" name="bthUpload" value="Upload Image" class="btn-primary">
+    </div>
 </form>
