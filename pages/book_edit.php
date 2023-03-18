@@ -15,6 +15,26 @@ if (isset($updatePressed)){
     if (trim($title) == ''){
         echo 'Please fill a valid name';
     }else{
+        if (isset($_FILES["imageFile"]) && $_FILES["imageFile"]["error"] == 0) {
+            $allowedTypes = array("image/jpeg", "image/png");
+            $maxSize = 5 * 1200 * 1200; // 5 MB
+    
+            if (in_array($_FILES["imageFile"]["type"], $allowedTypes) &&
+                $_FILES["imageFile"]["size"] <= $maxSize) {
+                $filename = $isbn . '.' . pathinfo($_FILES["imageFile"]["name"], PATHINFO_EXTENSION);
+                $uploadDir = "upload/";
+                $uploadPath = $uploadDir . $filename;
+                move_uploaded_file($_FILES["imageFile"]["tmp_name"], $uploadPath);
+    
+                $link = createMySQLConnection();
+                $sql = "UPDATE book SET cover = ? WHERE isbn = ?";
+                $stmt = $link->prepare($sql);
+                $stmt->bindParam(1, $uploadPath); 
+                $stmt->bindParam(2, $isbn);
+                $stmt->execute();
+    
+                $stmt->execute();
+            }
         $result = updateBooktoDB($title,$author,$publisher,$publisher_year,$short_description,$cover,$genre);
         if($result){
             header('location:index.php?menu=book');
