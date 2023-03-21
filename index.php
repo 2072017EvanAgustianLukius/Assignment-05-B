@@ -4,9 +4,16 @@ if(!isset($_SESSION['is_user_logged'])){
     $_SESSION['is_user_logged'] = false;
 }
 include_once 'db_utility/db_util.php';
-include_once 'db_utility/genre_util.php';
+//include_once 'db_utility/genre_util.php';
 include_once 'db_utility/book_util.php';
-include_once 'db_utility/user_util.php';
+//include_once 'db_utility/user_util.php';
+
+include_once 'entity/Genre.php';
+include_once 'entity/User.php';
+include_once 'entity/Book.php';
+include_once "dao/PDOUtil.php";
+include_once 'dao/UserDao.php';
+include_once 'dao/GenreDao.php';
 ?>
 
 <!DOCTYPE html>

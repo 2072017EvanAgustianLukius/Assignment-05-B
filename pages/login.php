@@ -1,4 +1,6 @@
 <?php
+$userDao = new \dao\UserDao();
+
 $loginPressed = filter_input(INPUT_POST, 'btnLogin');
 if (isset($loginPressed)){
     $email = filter_input(INPUT_POST, 'email');
@@ -6,13 +8,13 @@ if (isset($loginPressed)){
     if(trim($email) == '' || trim($password) == ''){
         echo '<div>Please fill email and password</div>';
     }else{
-        $user = login($email, $password);
-        if ($user['email'] == $email){
-            $_SESSION['is_user_logged'] = true;
-            $_SESSION['user_name'] = $user['name'];
-            header('location:index.php');
-        }else{
+        $user = $userDao->login($email, $password);
+        if (!$user) {
             echo '<div>Invalid Email or Password</div>';
+        } else if ($user->getEmail() == $email){
+            $_SESSION['is_user_logged'] = true;
+            $_SESSION['user_name'] = $user->getName();
+            header('location:index.php');
         }
     }
 }

@@ -1,8 +1,10 @@
 <?php
+$genreDao = new \dao\GenreDao();
+
 $deleteCommand = filter_input(INPUT_GET, 'com');
 if(isset($deleteCommand) && $deleteCommand == 'del'){
     $genreId = filter_input(INPUT_GET, 'gid');
-    $result = deleteGenrefromDB($genreId);
+    $result = $genreDao->deleteGenrefromDB($genreId);
     if($result){
         echo '<div>Data successfully deleted</div>';
     }else{
@@ -16,7 +18,9 @@ if (isset($saveButtonPressed)){
     if (trim($name) == ""){
         echo 'Please fill a valid genre name';
     } else {
-        $result  = addGenreToDB($name);
+        $genre = new \entity\Genre();
+        $genre->setName($name);
+        $result  = $genreDao->addGenreToDB($name);
         if($result){
             echo '<div>Data Successfully added </div>';
         }else{
@@ -34,11 +38,7 @@ if (isset($saveButtonPressed)){
     <input class="btn btn-info" class="form-control" type="submit" name="btnSave" value="Save Genre">
 </form>
 
-<?php
-$link = createMySQLConnection();
-$result = fetchGenreFromDB();
-$link = null;
-?>
+
 
 <table id="myTable" class="table table-striped table-bordered" style="width:100%">
     <thead class="thead-dark">
@@ -48,14 +48,16 @@ $link = null;
     </thead>
     <tbody>
     <?php
-    foreach ($result as $genre){
+    $genres = $genreDao->fetchGenreFromDB();
+    /** @var \entity\Genre $genre */
+    foreach ($genres as $genre){
         echo '<tr>';
-        echo '<td>' . $genre['id'] . '</td>';
-        echo '<td>' . $genre['name'] . '</td>';
+        echo '<td>' . $genre->getId(). '</td>';
+        echo '<td>' . $genre->getName() . '</td>';
         echo '<td>
-            <button onclick="editGenre(' . $genre['id'] . ')"
+            <button onclick="editGenre(' . $genre->getId() . ')"
             class="btn btn-warning">Edit Data</button>
-            <button onclick="deleteGenre('. $genre['id'] . ')"
+            <button onclick="deleteGenre('. $genre->getId() . ')"
             class="btn btn-danger">Delete Data</button>';
         '</td>';
          echo '</tr>';
