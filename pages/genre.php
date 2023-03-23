@@ -20,7 +20,7 @@ if (isset($saveButtonPressed)){
     } else {
         $genre = new \entity\Genre();
         $genre->setName($name);
-        $result  = $genreDao->addGenreToDB($name);
+        $result  = $genreDao->addGenreToDB($genre);
         if($result){
             echo '<div>Data Successfully added </div>';
         }else{
