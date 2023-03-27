@@ -54,19 +54,33 @@ class GenreDao
         $result = 0;
         $link = PDOUtil::createMySQLConnection();
         $link->beginTransaction();
+
+        // Check if genre has a valid ID
+        if (!$genre->getId()) {
+            $link = null;
+            throw new Exception('Genre ID is invalid');
+        }
+
         $query = "UPDATE genre SET name = ? WHERE id = ?";
         $stmt = $link->prepare($query);
         $stmt->bindValue(1, $genre->getName());
         $stmt->bindValue(2, $genre->getId());
+
+        // Execute query and handle errors
         if($stmt->execute()){
             $link->commit();
             $result = 1;
         }else{
             $link->rollBack();
+            $errorInfo = $stmt->errorInfo();
+            $errorMessage = $errorInfo[2] ?? 'Unknown error';
+            throw new Exception($errorMessage);
         }
+
         $link = null;
         return $result;
     }
+
 
     public function deleteGenrefromDB($id){
         $result = 0;

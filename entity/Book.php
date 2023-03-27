@@ -11,7 +11,7 @@ class Book
     private int $year;
     private string $description;
     private string $cover;
-    private Genre $genre;
+    private Genre  $genre;
 
     /**
      * @return string
@@ -131,6 +131,9 @@ class Book
      */
     public function getGenre(): Genre
     {
+        if(!isset($this->genre)){
+            $this->genre= new Genre();
+        }
         return $this->genre;
     }
 
@@ -139,7 +142,31 @@ class Book
      */
     public function setGenre(Genre $genre): void
     {
+        if(!isset($this->genre)){
+            $this->genre= new Genre();
+        }
         $this->genre = $genre;
+    }
+
+    public function __set(string $name, $value): void
+    {
+        if(!isset($this->genre)){
+            $this->genre= new Genre();
+        }
+        switch ($name){
+            case 'publisher_year':
+                $this->year=$value;
+                break;
+            case 'short_description':
+                $this->description=$value;
+                break;
+            case 'genre_id':
+                $this->genre->setId($value);
+                break;
+            case 'name':
+                $this->genre->setName($value);
+                break;
+        }
     }
 
 

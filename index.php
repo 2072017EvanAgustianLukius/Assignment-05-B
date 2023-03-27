@@ -14,6 +14,7 @@ include_once 'entity/Book.php';
 include_once "dao/PDOUtil.php";
 include_once 'dao/UserDao.php';
 include_once 'dao/GenreDao.php';
+include_once 'dao/BookDao.php';
 ?>
 
 <!DOCTYPE html>

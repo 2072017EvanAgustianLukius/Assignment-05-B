@@ -1,9 +1,11 @@
 <?php
+$genreDao = new \dao\GenreDao();
+$bookDao = new \dao\BookDao();
 
 $deleteCommand = filter_input(INPUT_GET, 'com');
 if(isset($deleteCommand) && $deleteCommand == 'del'){
     $bookId = filter_input(INPUT_GET, 'gisbn');
-    $result = deleteBookfromDB($bookId);
+    $result = $bookDao->deleteBookfromDB($bookId);
     if($result){
         echo '<div>Data successfully deleted</div>';
     }else{
@@ -31,14 +33,23 @@ if (isset($saveButtonPressed)){
             move_uploaded_file($_FILES['cover']['tmp_name'],$targetFile);
         }
     }
-    $result = addBookToDB($isbn, $title,$author,$publisher,$publisher_year,$short_description,$genre, $newFileName);
     if (trim($isbn) == ""){
         echo 'Please fill a valid Book name';
     } else {
-//        $result = addBookToDB($isbn, $title,$author,$publisher,$publisher_year,$short_description,$genre);
+        require_once 'entity/Book.php';
+        $book = new \entity\Book();
+        $book->setIsbn($isbn);
+        $book->setTitle($title);
+        $book->setAuthor($author);
+        $book->setPublisher($publisher);
+        $book->setYear($publisher_year);
+        $book->setDescription($short_description);
+        $book->setGenre($genre);
+        $book->setCover($targetFile);
+        $result = $bookDao->addBookToDB($book);
         if($result){
             echo '<div>Data Successfully added </div>';
-        }else{
+        } else {
             echo '<div>Failed to add Book </div>';
         }
     }
@@ -46,10 +57,7 @@ if (isset($saveButtonPressed)){
 ?>
 
 <?php
-$link = createMySQLConnection();
-$result2 = fetchGenreFromDB();
-$result3 = fetchBookFromDB();
-$link = null;
+$link = \dao\PDOUtil::createMySQLConnection();
 ?>
 
 
@@ -82,8 +90,9 @@ $link = null;
         <label for="txtGenre">Genre</label>
         <select class="form-control" name="txtGenre">
             <?php
-            foreach ($result2 as $book) {
-                echo '<option value="' . $book['id'] . '">' . $book['name'] . '</option>';
+            $genres = $genreDao->fetchGenreFromDB();
+            foreach ($genres as $book) {
+                echo '<option value="' . $book->getId() . '">' . $book->getName() . '</option>';
             }
             ?>
         </select>
@@ -96,20 +105,6 @@ $link = null;
 </form>
 
 <?php
-/**
- * @param $book
- * @return string
- */
-//function tampilkanGambar($book) : string
-//{
-//    if ($book['cover'] = null OR $book['cover'] = "") {
-//        $gambar = 'default_book.jpg';
-//    } else {
-//        $gambar = $book['cover'] ;
-//    }
-//    return '<img src="upload/' . $gambar . '" width="100">';
-//
-//}
 
 
 echo '<table id="myTable" class="table table-striped table-bordered" style="width:100%">';
@@ -127,27 +122,27 @@ echo '<th>Action</th>';
 echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
-
-foreach ($result3 as $book) {
+$books = $bookDao->fetchBookFromDB();
+foreach ($books as $book) {
     echo '<tr>';
     echo '<td>';
-    if($book['cover'] == null || $book['cover'] == ""){
+    if($book->getCover() == null || $book->getCover() == ""){
         echo '<img src="upload/default_book.jpg" width="100">';
     }else{
-        echo '<img src="upload/' . $book['cover'] . '" width="100">';
+        echo '<img src="upload/' . $book->getCover() . '" width="100">';
     }
     echo '</td>';
-    echo '<td>' . $book['isbn'] . '</td>';
-    echo '<td>' . $book['title'] . '</td>';
-    echo '<td>' . $book['author'] . '</td>';
-    echo '<td>' . $book['publisher'] . '</td>';
-    echo '<td>' . $book['publisher_year'] . '</td>';
-    echo '<td>' . $book['short_description'] . '</td>';
-    echo '<td>' . $book['name'] . '</td>';
+    echo '<td>' . $book->getIsbn() . '</td>';
+    echo '<td>' . $book->getTitle() . '</td>';
+    echo '<td>' . $book->getAuthor() . '</td>';
+    echo '<td>' . $book->getPublisher() . '</td>';
+    echo '<td>' . $book->getYear() . '</td>';
+    echo '<td>' . $book->getDescription() . '</td>';
+    echo '<td>' . $book->getGenre()->getName() . '</td>';
     echo '<td>
-            <button onclick="UploadCover(' . $book['isbn'] . ')" class="btn btn-primary">Change Cover</button>
-            <button onclick="editBook(' . $book['isbn'] . ')" class="btn btn-warning">Edit Data</button>
-            <button onclick="deleteBook('. $book['isbn'] . ')" class="btn btn-danger">Delete Data</button>
+            <button onclick="UploadCover(' . $book->getIsbn() . ')" class="btn btn-primary">Change Cover</button>
+            <button onclick="editBook(' . $book->getIsbn() . ')" class="btn btn-warning">Edit Data</button>
+            <button onclick="deleteBook('. $book->getIsbn() . ')" class="btn btn-danger">Delete Data</button>
          </td>';
     echo '</tr>';
 }
