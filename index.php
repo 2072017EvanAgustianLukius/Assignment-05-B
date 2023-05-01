@@ -1,4 +1,8 @@
 <?php
+
+use controller\GenreController;
+use controller\UserController;
+
 session_start();
 if(!isset($_SESSION['is_user_logged'])){
     $_SESSION['is_user_logged'] = false;
@@ -15,6 +19,8 @@ include_once "dao/PDOUtil.php";
 include_once 'dao/UserDao.php';
 include_once 'dao/GenreDao.php';
 include_once 'dao/BookDao.php';
+include_once 'controller/UserController.php';
+include_once 'controller/GenreController.php';
 ?>
 
 <!DOCTYPE html>
@@ -68,13 +74,15 @@ if($_SESSION['is_user_logged']){
             include_once 'pages/home.php';
             break;
         case 'genre':
-            include_once 'pages/genre.php';
+            $genreController = new GenreController();
+            $genreController->index();
             break;
         case 'book':
             include_once 'pages/book.php';
             break;
         case 'genre_edit':
-            include_once 'pages/genre_edit.php';
+            $genreController = new GenreController();
+            $genreController->edit();
             break;
         case 'book_edit':
             include_once 'pages/book_edit.php';
@@ -94,7 +102,8 @@ if($_SESSION['is_user_logged']){
 </main>
 <?php
 } else {
-        include_once 'pages/login.php';
+        $userController = new UserController();
+        $userController->index();
 }
 ?>
 <script>

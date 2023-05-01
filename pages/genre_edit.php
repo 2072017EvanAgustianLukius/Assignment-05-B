@@ -1,26 +1,3 @@
-<?php
-$genreDao = new \dao\GenreDao();
-
-    $genreid = filter_input(INPUT_GET, 'gid');
-    if (isset($genreid)){
-        $genre = $genreDao->fetchOneGenreFromDB($genreid);
-    }
-    $updatePressed = filter_input(INPUT_POST, 'btnUpdate');
-    if (isset($updatePressed)){
-        $name = filter_input(INPUT_POST, 'txtName');
-        if (trim($name) == ''){
-            echo 'Please fill a valid genre name';
-        }else{
-            $genre->setName($name);
-            $result = $genreDao->updateGenretoDB($genre);
-            if($result){
-                header('location:index.php?menu=genre');
-            }else{
-                echo '<div>Failed to Update</div>';
-            }
-        }
-    }
-?>
 <form class="form-group" method="post">
     <div class="form-group">
         <label for="txtID" class="col-form-label">Genre ID</label>
