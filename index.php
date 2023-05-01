@@ -2,6 +2,7 @@
 
 use controller\GenreController;
 use controller\UserController;
+use controller\BookController;
 
 session_start();
 if(!isset($_SESSION['is_user_logged'])){
@@ -21,6 +22,7 @@ include_once 'dao/GenreDao.php';
 include_once 'dao/BookDao.php';
 include_once 'controller/UserController.php';
 include_once 'controller/GenreController.php';
+include_once 'controller/BookController.php';
 ?>
 
 <!DOCTYPE html>
@@ -85,6 +87,8 @@ if($_SESSION['is_user_logged']){
             $genreController->edit();
             break;
         case 'book_edit':
+            $bookController = new BookController();
+            $bookController->edit();
             include_once 'pages/book_edit.php';
             break;
         case  'upload':
